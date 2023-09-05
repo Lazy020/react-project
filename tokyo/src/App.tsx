@@ -1,20 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 //função principal
 export default function App() {
   const [input, setInput] = useState("");
-  const [tarefa, setTarefa] = useState([
-    'Estudar',
-    'Lavar louça',
-    'Descansar'
-  ])
+  const [tarefa, setTarefa] = useState<string[]>([])
 
   const [editarTarefa, setEditarTarefa] = useState({
     enabled: false,
     tarefa:''
-  });
+  })
 
+  const [teste, setTeste] =useState(false);
+  useEffect(() => {
+    const tarefaSalva = localStorage.getItem("@cursoreact")
+    console.log(tarefaSalva);
+    
+  }, [])
 
   function registrar(){
     if (!input){
@@ -27,6 +29,7 @@ export default function App() {
     }
     setTarefa(tarefa => [...tarefa, input])
     setInput("")
+    localStorage.setItem("@cursoreact", JSON.stringify([...tarefa, input]))
   }
   function editarTarefaSalva(){
     const findIndexTarefa = tarefa.findIndex(tarefa => tarefa === editarTarefa.tarefa)
@@ -39,11 +42,13 @@ export default function App() {
       tarefa: ''
     })
     setInput("")
+    localStorage.setItem("@cursoreact", JSON.stringify([todasTarefas]))
   }
   
   function excluir (item: string){
     const excluirTarefa = tarefa.filter(tarefa => tarefa !== item)
     setTarefa(excluirTarefa)
+    localStorage.setItem("@cursoreact", JSON.stringify([excluirTarefa]))
   }
   function editar (item: string){
     setInput(item)
@@ -55,14 +60,14 @@ export default function App() {
   return (
 
     <div>
-        <h1>Todo List</h1>
-
+        <h1>Todo List★</h1>
+        
         <input
         placeholder="Digite uma senha..."
         value ={input}
         onChange={ (e) => setInput(e.target.value)}
         />
-        <button onClick={registrar}>Adicionar tarefa</button>
+        <button onClick={registrar}>{editarTarefa.enabled ? "Atualizar tarefa" : "Adicionar tarefa"}</button>
         <hr/>
         {tarefa.map( (item, index)=> (
           <section key={item}>
