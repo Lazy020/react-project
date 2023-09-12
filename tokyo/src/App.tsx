@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 
 //função principal
 export default function App() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const primeiraR = useRef(true);
+
   const [input, setInput] = useState("");
   const [tarefa, setTarefa] = useState<string[]>([])
 
@@ -11,12 +14,21 @@ export default function App() {
     tarefa:''
   })
 
-  const [teste, setTeste] =useState(false);
   useEffect(() => {
     const tarefaSalva = localStorage.getItem("@cursoreact")
-    console.log(tarefaSalva);
-    
+    if(tarefaSalva){
+      setTarefa(JSON.parse(tarefaSalva));
+    }
   }, [])
+
+  useEffect(() => {
+    if(primeiraR.current){
+      primeiraR.current = false; 
+      return;
+  }
+  localStorage.setItem("@cursoreact", JSON.stringify(tarefa));
+  console.log("UseEffect chamado!")
+}, [tarefa])
 
   function registrar(){
     if (!input){
@@ -31,6 +43,7 @@ export default function App() {
     setInput("")
     localStorage.setItem("@cursoreact", JSON.stringify([...tarefa, input]))
   }
+
   function editarTarefaSalva(){
     const findIndexTarefa = tarefa.findIndex(tarefa => tarefa === editarTarefa.tarefa)
     const todasTarefas = [...tarefa]
@@ -42,15 +55,17 @@ export default function App() {
       tarefa: ''
     })
     setInput("")
-    localStorage.setItem("@cursoreact", JSON.stringify([todasTarefas]))
+    localStorage.setItem("@cursoreact", JSON.stringify(todasTarefas))
   }
   
   function excluir (item: string){
     const excluirTarefa = tarefa.filter(tarefa => tarefa !== item)
     setTarefa(excluirTarefa)
-    localStorage.setItem("@cursoreact", JSON.stringify([excluirTarefa]))
+    localStorage.setItem("@cursoreact", JSON.stringify(excluirTarefa))
   }
   function editar (item: string){
+    inputRef.current?.focus();
+
     setInput(item)
     setEditarTarefa({
       enabled: true,
@@ -63,16 +78,17 @@ export default function App() {
         <h1>Todo List★</h1>
         
         <input
-        placeholder="Digite uma senha..."
+        placeholder="Digite uma tarefa..."
         value ={input}
         onChange={ (e) => setInput(e.target.value)}
+        ref = {inputRef}
         />
         <button onClick={registrar}>{editarTarefa.enabled ? "Atualizar tarefa" : "Adicionar tarefa"}</button>
         <hr/>
         {tarefa.map( (item, index)=> (
           <section key={item}>
           <span>{item}</span>
-          <button onClick={()=> excluir(item)}>Excluir</button>
+          <button onClick={()=> excluir(item)}>Excluir</button> 
           <button onClick={()=> editar(item)}>Editar</button>
           </section>
         ))}
