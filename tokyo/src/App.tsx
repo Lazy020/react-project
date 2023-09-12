@@ -40,7 +40,7 @@ export default function App() {
   
     setTarefa(tarefa => [...tarefa, input])
     setInput("")
-    localStorage.setItem("@cursoreact", JSON.stringify([...tarefa, input]))
+   
   }, [input, tarefa])  
 
   function editarTarefaSalva(){
@@ -54,16 +54,16 @@ export default function App() {
       tarefa: ''
     })
     setInput("")
-    localStorage.setItem("@cursoreact", JSON.stringify(todasTarefas))
+   
   }
   
   function excluir (item: string){
     const excluirTarefa = tarefa.filter(tarefa => tarefa !== item)
     setTarefa(excluirTarefa)
-    localStorage.setItem("@cursoreact", JSON.stringify(excluirTarefa))
+   
   }
   function editar (item: string){
-    //inputRef.current?.focus();
+    inputRef.current?.focus();
     setInput(item)
     setEditarTarefa({
       enabled: true,
