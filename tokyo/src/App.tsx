@@ -1,19 +1,18 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import './App.css'
 
 //função principal
 export default function App() {
   const inputRef = useRef<HTMLInputElement>(null);
   const primeiraR = useRef(true);
-
   const [input, setInput] = useState("");
   const [tarefa, setTarefa] = useState<string[]>([])
-
   const [editarTarefa, setEditarTarefa] = useState({
     enabled: false,
     tarefa:''
-  })
+  });
 
+  //const [teste, setTeste] = useState(false);
   useEffect(() => {
     const tarefaSalva = localStorage.getItem("@cursoreact")
     if(tarefaSalva){
@@ -29,7 +28,7 @@ export default function App() {
   localStorage.setItem("@cursoreact", JSON.stringify(tarefa));
 }, [tarefa])
 
-  function registrar(){
+  const registrar = useCallback(() => {
     if (!input){
       alert("Preencha o nome da sua tarefa")
       return;
@@ -38,10 +37,11 @@ export default function App() {
       editarTarefaSalva();
       return;
     }
+  
     setTarefa(tarefa => [...tarefa, input])
     setInput("")
     localStorage.setItem("@cursoreact", JSON.stringify([...tarefa, input]))
-  }
+  }, [input, tarefa])  
 
   function editarTarefaSalva(){
     const findIndexTarefa = tarefa.findIndex(tarefa => tarefa === editarTarefa.tarefa)
@@ -73,6 +73,7 @@ export default function App() {
    const totalTarefas = useMemo(() => {
     return tarefa.length
    }, [tarefa])
+   
   return (
 
     <div>
