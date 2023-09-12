@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import './App.css'
 
 //função principal
@@ -27,7 +27,6 @@ export default function App() {
       return;
   }
   localStorage.setItem("@cursoreact", JSON.stringify(tarefa));
-  console.log("UseEffect chamado!")
 }, [tarefa])
 
   function registrar(){
@@ -64,14 +63,16 @@ export default function App() {
     localStorage.setItem("@cursoreact", JSON.stringify(excluirTarefa))
   }
   function editar (item: string){
-    inputRef.current?.focus();
-
+    //inputRef.current?.focus();
     setInput(item)
     setEditarTarefa({
       enabled: true,
       tarefa: item
     }) 
   }
+   const totalTarefas = useMemo(() => {
+    return tarefa.length
+   }, [tarefa])
   return (
 
     <div>
@@ -85,6 +86,7 @@ export default function App() {
         />
         <button onClick={registrar}>{editarTarefa.enabled ? "Atualizar tarefa" : "Adicionar tarefa"}</button>
         <hr/>
+        <strong> Você tem: {totalTarefas} tarefas!</strong>
         {tarefa.map( (item, index)=> (
           <section key={item}>
           <span>{item}</span>
